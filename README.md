@@ -71,6 +71,10 @@ To Access the RabbitMQ Management interface:
 Running `kubectl get pods` should result in:
 `rabbitmq-1629212308-0   1/1     Running   0          5m6s`
 
+
+For the RabbitMQ UI management portal run:
+`kubectl port-forward --namespace default svc/NAME 15672:15672`
+
 ## Prepare deployment.yaml
 
 In `deployment.yaml`:
@@ -95,9 +99,35 @@ If you run, `kubectl get pods`, you should see 4 (replicas+1) pods.
 If you run, `kubectl get services`, under `EXTERNAL-IP` for TYPE `LoadBalancer` will be `PENDING`.
 Wait for a few minutes and check again, an actualy IP,`XX.XXX.XX.255` should be there.
 
-## Deploy
+## Test
 
 To test it worked, in your browser run `EXTERNAL-IP:5000`.
+
 You should get the following output: 
 
 ![Screenshot](success.png)
+
+## Test with Python
+
+In `test.py`, update the `external_ip` variable with your EXTERNAL_IP
+
+Run `python test.py`. 
+
+The output should be an array of the following object:
+
+```
+{
+    "boundingBox": [
+        2.3211,
+        8.9176,
+        2.458,
+        8.9176,
+        2.458,
+        8.9944,
+        2.3211,
+        8.9944
+    ],
+    "confidence": 1,
+    "text": "as"
+}
+```
