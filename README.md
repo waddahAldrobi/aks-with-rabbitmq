@@ -67,9 +67,37 @@ To Access the RabbitMQ Management interface:
     kubectl port-forward --namespace default svc/rabbitmq-1629212308 15672:15672
 ```
 
+
+Running `kubectl get pods` should result in:
+`rabbitmq-1629212308-0   1/1     Running   0          5m6s`
+
 ## Prepare deployment.yaml
 
 In `deployment.yaml`:
-1. Fill in the endpoint and api key 
+1. Fill in the endpoint and api key under `billing` and `apikey`
+2. Fill `Queue__RabbitMQ__HostName` with `NAME.default.svc` from the RabbitMQ pod generation output
+3. Fill `Queue__RabbitMQ__VirtualHost` with the deafult `/`
+4. Fill `Queue__RabbitMQ__Username` and `Queue__RabbitMQ__Password` with the ouput of the running the commands from the RabbitMQ pod generation output
+
+Username is probably `user` and password is a random 10 character string. 
+
+5. Fill `Queue__RabbitMQ__Port` with the default `5672`
+6. Set `replicas` to `3` or any number you want. 
 
 
+## Deploy
+
+Run `kubectl apply -f deployment.yaml`
+
+If you run, `kubectl get pods`, you should see 4 (replicas+1) pods.
+
+
+If you run, `kubectl get services`, under `EXTERNAL-IP` for TYPE `LoadBalancer` will be `PENDING`.
+Wait for a few minutes and check again, an actualy IP,`XX.XXX.XX.255` should be there.
+
+## Deploy
+
+To test it worked, in your browser run `EXTERNAL-IP:5000`.
+You should get the following output: 
+
+![Screenshot](success.png)
