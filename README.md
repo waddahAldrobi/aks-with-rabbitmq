@@ -18,14 +18,14 @@ For example purposes, I called the computer vision resoruce `aks-with-rabbitmq-c
 2. Create a Kubernetes Service (e.g. aks-with-rabbitmq-cluster) [I used all default settings]
 3. Connect with the AKS cluster with this command:
 ```az aks get-credentials --resource-group MyResourceGroup --name MyCluster```
+
 For example:
 ``` az aks get-credentials --resource-group aks-with-rabbitmq-rg --name aks-with-rabbitmq-cluster ```
 
 
 To check, run `kubectl get all`, output should be:
 
-``` NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE```
-``` service/kubernetes   ClusterIP   10.0.0.1     <none>        443/TCP   57m ```
+```service/kubernetes   ClusterIP   10.0.0.1     <none>        443/TCP   57m ```
 
 ## Create RabbitMQ Pod
 
@@ -81,7 +81,7 @@ In `deployment.yaml`:
 1. Fill in the endpoint and api key under `billing` and `apikey`
 2. Fill `Queue__RabbitMQ__HostName` with `NAME.default.svc` from the RabbitMQ pod generation output
 3. Fill `Queue__RabbitMQ__VirtualHost` with the deafult `/`
-4. Fill `Queue__RabbitMQ__Username` and `Queue__RabbitMQ__Password` with the ouput of the running the commands from the RabbitMQ pod generation output
+4. Fill `Queue__RabbitMQ__Username` and `Queue__RabbitMQ__Password` with the commands from the RabbitMQ pod generation output
 
 Username is probably `user` and password is a random 10 character string. 
 
@@ -97,6 +97,7 @@ If you run, `kubectl get pods`, you should see 4 (replicas+1) pods.
 
 
 If you run, `kubectl get services`, under `EXTERNAL-IP` for TYPE `LoadBalancer` will be `PENDING`.
+
 Wait for a few minutes and check again, an actualy IP,`XX.XXX.XX.255` should be there.
 
 ## Test
@@ -109,7 +110,7 @@ You should get the following output:
 
 ## Test with Python
 
-In `test.py`, update the `external_ip` variable with your EXTERNAL_IP
+In `test.py`, update the `external_ip` variable with your `EXTERNAL-IP`
 
 Run `python test.py`. 
 
