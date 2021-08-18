@@ -15,39 +15,47 @@ spec:
         app: read-app
     spec:
       containers:
-      - name: cognitive-services-read
-        image: mcr.microsoft.com/azure-cognitive-services/vision/read
-        ports:
-        - containerPort: 5000
-        env:
-        - name: EULA
-          value: accept
-        - name: billing
-          value: # {ENDPOINT_URI}
-        - name: apikey
-          value: # {API_KEY}
-        # - name: Storage__ObjectStore__AzureBlob__ConnectionString
-        #   value: DefaultEndpointsProtocol=https;AccountName=aksstoragedemo;AccountKey=JmYsfqO+sjeicliyjgIQ3IDC2mCha/AQWNGF/rVe+IOq9/NmvkZUJ8mJMvQU9xizogTpRESTMYl7DSxcOeyfWw==;EndpointSuffix=core.windows.net
-        - name: Queue__RabbitMQ__HostName
-          value: # {RABBITMQ_HOSTNAME}
-        - name: Queue__RabbitMQ__VirtualHost
-          value: # {RABBITMQ_VIRTUALHOST, default: '/'}
-        - name: Queue__RabbitMQ__Username
-          value: # {RABBITMQ_USERNAME, default: 'guest'}
-        - name: Queue__RabbitMQ__Password
-          value: # {RABBITMQ_PASSWORD, default: 'guest'}
-        - name: Queue__RabbitMQ__Port
-          value: # {RABBITMQ_PORT, default: 5672}
+        - name: cognitive-services-read
+          image: mcr.microsoft.com/azure-cognitive-services/vision/read
+          ports:
+            - containerPort: 5000
+          env:
+            - name: EULA
+              value: accept
+            - name: billing
+              value: # {ENDPOINT_URI}
+            - name: apikey
+              value: # {API_KEY}
+            - name: Queue__RabbitMQ__HostName
+              value: # {RABBITMQ_HOSTNAME}
+            - name: Queue__RabbitMQ__VirtualHost
+              value: # {RABBITMQ_VIRTUALHOST, default: '/'}
+            - name: Queue__RabbitMQ__Username
+              value: # {RABBITMQ_USERNAME, default: 'guest'}
+            - name: Queue__RabbitMQ__Password
+              value: # {RABBITMQ_PASSWORD, default: 'guest'}
+            - name: Queue__RabbitMQ__Port
+              value: # {RABBITMQ_PORT, default: "5672"}
 
+          volumeMounts:
+            - name: read-data
+              mountPath: /share
+              readOnly: false
 
-        livenessProbe:
-          httpGet:
-            path: /ContainerLiveness
-            port: 5000
-          initialDelaySeconds: 60
-          periodSeconds: 60
-          timeoutSeconds: 20
---- 
+          livenessProbe:
+            httpGet:
+              path: /ContainerLiveness
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            timeoutSeconds: 20
+
+      volumes:
+      - name: read-data
+        persistentVolumeClaim:
+          claimName: read-pvc
+
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -55,7 +63,21 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 5000
-    targetPort: 5000
+    - port: 5000
+      targetPort: 5000
   selector:
     app: read-app
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: read-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 5Gi
