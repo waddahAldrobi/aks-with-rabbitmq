@@ -132,3 +132,15 @@ The output should be an array of the following object:
     "text": "as"
 }
 ```
+
+
+## Clean up resources
+
+Run `kubectl delete -f deployment.yaml`
+Run `helm uninstall RABBITMQ_NAME ` e.g. `helm uninstall rabbitmq-1629212308`
+
+To check, run `kubectl get all`, it shoud return:
+
+`service/kubernetes   ClusterIP   XX.X.X.X     <none>        XXX/TCP   Xh`
+
+Delete resource group on Azure Portal
